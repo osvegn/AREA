@@ -33,12 +33,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install docker-compose
-        if: ${{ matrix.os }} != "macos-latest"
+        if: ${{ matrix.os }} != macos-latest
         uses: KengoTODA/actions-setup-docker-compose@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Install docker-compose
-        if: ${{ matrix.os }} == "macos-latest"
+        if: ${{ matrix.os }} == macos-latest
         run: brew install docker docker-compose
       - name: Run docker-compose build server
         id: run-docker-compose-build-server
