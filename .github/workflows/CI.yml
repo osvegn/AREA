@@ -21,63 +21,68 @@ jobs:
       - name: Check docker-file consistancy
         run: .github/scripts/docker-compose-consistancy.sh >> $GITHUB_STEP_SUMMARY
 
-  run-docker-compose-server:
+  run-docker-compose:
+    needs: ["docker-compose-validity"]
+    runs-on: ubuntu-22.04
     strategy:
       fail-fast: true
       matrix:
-        os: ["ubuntu-22.04", "ubuntu-latest", "windows-latest", "macos-latest"]
-    needs: ["docker-compose-validity"]
-    runs-on: ${{ matrix.os }}
+        type: ["server", "client_mobile", "client_web"]
     steps:
-      - name: print of
-        run: echo "Os => ${{ matrix.os }}"
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      # - name: Install docker-compose
-      #   if: matrix.os != 'macos-latest'
-      #   uses: KengoTODA/actions-setup-docker-compose@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install docker-compose
-        if: matrix.os == 'macos-latest'
-        run: |
-          brew install docker docker-compose colima
-          colima start
-      - name: Run docker-compose build server
-        id: run-docker-compose-build-server
-        run: |
-          echo "${{ secrets.FIREBASE_CONFIG }}" >> ./Server/firebaseConfig.js
-          docker-compose build server
+      - name: Write env file for server
+        if: matrix.type == 'server'
+        run: echo "${{ secrets.FIREBASE_CONFIG }}" >> ./Server/firebaseConfig.js
+      - name: Write env file for application
+        if: matrix.type == 'client_mobile'
+        run: echo '${{ secrets.ENV_TS }}' > ./Application/env.ts
+      - name: Run docker-compose build ${{ matrix.type }}
+        run: docker-compose build ${{ matrix.type }}
 
-  run-docker-compose-client-mobile:
-    needs: ["docker-compose-validity"]
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Run docker-compose build client_mobile
-        id: run-docker-compose-build-client-mobile
-        run: |
-          echo '${{ secrets.ENV_TS }}' > ./Application/env.ts
-          docker-compose build client_mobile
+  # run-docker-compose-server:
+  #   needs: ["docker-compose-validity"]
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Run docker-compose build server
+  #       id: run-docker-compose-build-server
+  #       run: |
+  #         echo "${{ secrets.FIREBASE_CONFIG }}" >> ./Server/firebaseConfig.js
+  #         docker-compose build server
 
-  run-docker-compose-client-web:
-    needs: ["docker-compose-validity"]
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Run docker-compose build client_web
-        id: run-docker-compose-build-client-web
-        run: docker-compose build client_web
+  # run-docker-compose-client-mobile:
+  #   needs: ["docker-compose-validity"]
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Run docker-compose build client_mobile
+  #       id: run-docker-compose-build-client-mobile
+  #       run: |
+  #         echo '${{ secrets.ENV_TS }}' > ./Application/env.ts
+  #         docker-compose build client_mobile
+
+  # run-docker-compose-client-web:
+  #   needs: ["docker-compose-validity"]
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #     - name: Run docker-compose build client_web
+  #       id: run-docker-compose-build-client-web
+  #       run: docker-compose build client_web
 
   mirroring:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    needs: ["run-docker-compose-server", "run-docker-compose-client-mobile", run-docker-compose-client-web]
+    needs: 'run-docker-compose'
+    # needs: ["run-docker-compose-server", "run-docker-compose-client-mobile", run-docker-compose-client-web]
     steps:
       - uses: actions/checkout@v3
         with:
