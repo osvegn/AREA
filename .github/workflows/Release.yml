@@ -8,6 +8,11 @@ on:
         required: true
         type: string
         default: '0.0.0'
+      body:
+        description: 'Body'
+        required: true
+        type: string
+        default: 'Body'
 
 jobs:
   release:
