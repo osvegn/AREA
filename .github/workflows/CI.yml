@@ -42,8 +42,9 @@ jobs:
       - name: Install docker-compose
         if: matrix.os == 'macos-latest'
         run: |
-          brew install docker docker-compose
-          systemctl start docker
+          brew install docker docker-compose docker-machine virtualbox
+          docker-machine create --driver virtualbox default
+          docker-machine restart
       - name: Run docker-compose build server
         id: run-docker-compose-build-server
         run: |
