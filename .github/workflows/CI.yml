@@ -22,8 +22,12 @@ jobs:
         run: .github/scripts/docker-compose-consistancy.sh >> $GITHUB_STEP_SUMMARY
 
   run-docker-compose-server:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: ["ubuntu-22.04", "ubuntu-latest", "windows-latest", "macos-latest"]
     needs: ["docker-compose-validity"]
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -44,7 +48,7 @@ jobs:
       - name: Run docker-compose build client_mobile
         id: run-docker-compose-build-client-mobile
         run: |
-          echo '${{ secrets.MOBILE_APP_ENV_JS }}' > ./Application/env.ts
+          echo '${{ secrets.ENV_TS }}' > ./Application/env.ts
           docker-compose build client_mobile
 
   run-docker-compose-client-web:

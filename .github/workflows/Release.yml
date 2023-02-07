@@ -20,7 +20,9 @@ jobs:
           fetch-depth: 0
       - name: Build the application
         id: build
-        run: docker-compose build client_mobile
+        run: |
+          echo '${{ secrets.ENV_TS }}' > ./Application/env.ts
+          docker-compose build client_mobile
       - name: Create artifact
         id: artifact
         uses: actions/upload-artifact@v3
