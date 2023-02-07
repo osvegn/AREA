@@ -36,4 +36,4 @@ jobs:
       - name: Push release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "client.apk"
+          artifacts: "client"
