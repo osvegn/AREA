@@ -29,6 +29,8 @@ jobs:
     needs: ["docker-compose-validity"]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: print of
+        run: echo "Os => ${{ matrix.os }}"
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0

@@ -23,6 +23,8 @@ jobs:
         run: |
           echo '${{ secrets.ENV_TS }}' > ./Application/env.ts
           docker-compose build client_mobile
+          docker ps -a
+          docker volume ls
       - name: Create artifact
         id: artifact
         uses: actions/upload-artifact@v3
