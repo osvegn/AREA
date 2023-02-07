@@ -26,14 +26,19 @@ jobs:
           docker-compose up client_mobile
           docker ps -a
           docker volume ls
-          docker cp area_client_mobile_1:/app/android/app/build/outputs/apk/release/app-release.apk ./client.apk
+          docker cp area_client_mobile_1:/app/android/app/build/outputs/apk/release/app-release.apk ${{ github.workspace }}/client.apk
       - name: Create artifact
         id: artifact
         uses: actions/upload-artifact@v3
         with:
           name: client
-          path: ./client.apk
-      - name: Push release
-        uses: ncipollo/release-action@v1
+          path: ${{ github.workspace }}/client.apk
+      # - uses: actions/download-artifact@v3
+      - name: Release
+        uses: softprops/action-gh-release@v1
         with:
-          artifacts: "client"
+          tag_name: ${{ github.event.inputs.version }}
+          body: ${{ github.event.inputs.body }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: |
+            ${{ github.workspace }}/client.apk
