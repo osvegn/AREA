@@ -26,7 +26,7 @@ jobs:
           docker-compose up client_mobile
           docker ps -a
           docker volume ls
-          docker cp area_client_mobile:/app/android/app/build/outputs/apk/release/app-release.apk ./client.apk
+          docker cp area_client_mobile_1:/app/android/app/build/outputs/apk/release/app-release.apk ./client.apk
       - name: Create artifact
         id: artifact
         uses: actions/upload-artifact@v3
