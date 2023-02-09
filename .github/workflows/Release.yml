@@ -40,7 +40,6 @@ jobs:
         with:
           name: client
           path: ${{ github.workspace }}/client.apk
-      # - uses: actions/download-artifact@v3
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
